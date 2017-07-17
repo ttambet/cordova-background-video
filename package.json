@@ -1,6 +1,6 @@
 {
   "name": "cordova-background-video",
-  "version": "1.0.16",
+  "version": "1.0.21",
   "description": "A simple Cordova/Phonegap plugin to capture video and preview background affecting app functionality.",
   "main": "index.js",
   "scripts": {
@@ -26,12 +26,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mlingos/cordova-background-video.git"
+    "url": "git+https://github.com/Neos21GitHub/cordova-background-video.git"
   },
-  "author": "mlingos",
+  "author": "Neos21",
   "license": "GPL3",
   "bugs": {
-    "url": "https://github.com/mlingos/cordova-background-video/issues"
+    "url": "https://github.com/Neos21GitHub/cordova-background-video/issues"
   },
-  "homepage": "https://github.com/mlingos/cordova-background-video#readme"
+  "homepage": "https://github.com/Neos21GitHub/cordova-background-video#readme"
 }

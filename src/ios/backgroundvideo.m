@@ -23,9 +23,9 @@
 {
     //stop the device from being able to sleep
     [UIApplication sharedApplication].idleTimerDisabled = YES;
-    //fileStorage, filename, camera, quality
-    self.token = [command.arguments objectAtIndex:1];
-    self.camera = [command.arguments objectAtIndex:2];
+    // filename, camera
+    self.token = [command.arguments objectAtIndex:0];
+    self.camera = [command.arguments objectAtIndex:1];
 
     //get rid of the old view (causes issues if the app is resumed)
     self.parentView = nil;
@@ -53,7 +53,7 @@
 
     //Capture session
     session = [[AVCaptureSession alloc] init];
-    [session setSessionPreset:AVCaptureSessionPresetMedium];
+    [session setSessionPreset:AVCaptureSessionPreset1920x1080];
 
     //Get the front camera and set the capture device
     AVCaptureDevice *inputDevice = [self getCamera: self.camera];

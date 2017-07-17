@@ -1,9 +1,9 @@
 var cordova = require('cordova');
 
 var backgroundvideo = {
-    start : function(fileStorage, filename, camera, quality, successFunction, errorFunction) {
+    start : function(filename, camera, successFunction, errorFunction) {
         camera = camera || 'back';
-        cordova.exec(successFunction, errorFunction, 'backgroundvideo', 'start', [fileStorage, filename, camera, quality]);
+        cordova.exec(successFunction, errorFunction, 'backgroundvideo', 'start', [filename, camera]);
         window.document.body.style.opacity = .99;
         setTimeout(function () {
           window.document.body.style.opacity = 1;
