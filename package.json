@@ -23,12 +23,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Neos21GitHub/cordova-background-video.git"
+    "url": "git+https://github.com/Neos21/cordova-background-video.git"
   },
   "author": "Neo <neos21@gmail.com> (http://neo.s21.xrea.com/)",
   "license": "GPL",
   "bugs": {
-    "url": "https://github.com/Neos21GitHub/cordova-background-video/issues"
+    "url": "https://github.com/Neos21/cordova-background-video/issues"
   },
-  "homepage": "https://github.com/Neos21GitHub/cordova-background-video#readme"
+  "homepage": "https://github.com/Neos21/cordova-background-video#readme"
 }

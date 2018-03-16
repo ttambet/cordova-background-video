@@ -3,7 +3,7 @@
   <name>cordova-background-video</name>
   <description>A simple Cordova/Phonegap plugin to capture video and preview background affecting app functionality.</description>
   <author>Neos21</author>
-  <repo>https://github.com/Neos21GitHub/backgroundvideo</repo>
+  <repo>https://github.com/Neos21/backgroundvideo</repo>
 
   <engines>
     <engine name="cordova" version=">=4.0.0" />

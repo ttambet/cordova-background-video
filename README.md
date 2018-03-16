@@ -8,7 +8,7 @@
 ### Install
 
 ```
-cordova plugin add https://github.com/Neos21GitHub/cordova-background-video.git
+cordova plugin add https://github.com/Neos21/cordova-background-video.git
 ```
 
 ### Usage
@@ -97,4 +97,4 @@ There's lots of Android phones all with their own quirks so we'd love it if you 
 - [Murga](http://neos21.hatenablog.jp/)
 - [El Mylar](http://neos21.hateblo.jp/)
 - [Bit-Archer](http://bit-archer.hatenablog.com/)
-- [GitHub - Neos21GitHub](https://github.com/Neos21GitHub/)
+- [GitHub - Neos21](https://github.com/Neos21/)
