@@ -87,7 +87,7 @@ There's lots of Android phones all with their own quirks so we'd love it if you 
 
 ## Author
 
-[Neo](http://neo.s21.xrea.com/) ([@Neos21](https://twitter.com/neos21))
+[Neo](http://neo.s21.xrea.com/) ([@Neos21](https://twitter.com/Neos21))
 
 
 ## Links
