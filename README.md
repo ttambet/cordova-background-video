@@ -8,7 +8,7 @@
 ### Install
 
 ```
-cordova plugin add https://github.com/Neos21/cordova-background-video.git
+cordova plugin add https://github.com/ttambet/cordova-background-video.git
 ```
 
 ### Usage
