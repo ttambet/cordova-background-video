@@ -49,8 +49,6 @@
     self.webView.backgroundColor = [UIColor clearColor];
     [self.webView.superview bringSubviewToFront:self.webView];
 
-    self.webView.layer.zPosition = CGFloat.greatestFiniteMagnitude;
-
     //camera stuff
 
     //Capture session

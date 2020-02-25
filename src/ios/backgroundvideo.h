@@ -12,7 +12,6 @@
 @property AVCaptureVideoPreviewLayer *previewLayer;
 @property (nonatomic, retain) UIView* parentView;
 @property (nonatomic, retain) UIView* view;
-@property (nonatomic, retain) UIView* liveView;
 @property AVCaptureSession *session;
 @property AVCaptureMovieFileOutput *output;
 @property NSString *outputPath;
