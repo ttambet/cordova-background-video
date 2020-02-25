@@ -30,6 +30,25 @@
     //get rid of the old view (causes issues if the app is resumed)
     self.parentView = nil;
 
+    //make the view
+    CGRect viewRect = CGRectMake(
+                                 self.webView.superview.frame.size.width - 270,
+                                 self.webView.superview.frame.size.height - 220,
+                                 250,
+                                 200
+                                );
+
+    self.parentView = [[UIView alloc] initWithFrame:viewRect];
+    [self.webView.superview addSubview:self.parentView];
+
+    self.view = [[UIView alloc] initWithFrame: self.parentView.bounds];
+    [self.parentView addSubview: view];
+    self.parentView.userInteractionEnabled = NO;
+
+    self.webView.opaque = NO;
+    self.webView.backgroundColor = [UIColor clearColor];
+    [self.webView.superview bringSubviewToFront:self.webView];
+
     //camera stuff
 
     //Capture session
@@ -67,6 +86,15 @@
     if ( [session canAddInput:deviceInput] )
         [session addInput:deviceInput];
 
+
+    //preview view
+    self.previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:session];
+    [self.previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
+
+    CALayer *rootLayer = [[self view] layer];
+    [rootLayer setMasksToBounds:YES];
+    [self.previewLayer setFrame:CGRectMake(0, 0, rootLayer.bounds.size.width, rootLayer.bounds.size.height)];
+    [rootLayer insertSublayer:self.previewLayer atIndex:0];
 
     //go
     [session startRunning];
