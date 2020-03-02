@@ -1,6 +1,10 @@
 var cordova = require('cordova');
 
 var backgroundvideo = {
+    startCamera : function(filename, camera, successFunction, errorFunction) {
+        camera = camera || 'back';
+        cordova.exec(successFunction, errorFunction, 'backgroundvideo', 'startCamera', [camera]);
+    },
     start : function(filename, camera, successFunction, errorFunction) {
         camera = camera || 'back';
         cordova.exec(successFunction, errorFunction, 'backgroundvideo', 'start', [filename, camera]);

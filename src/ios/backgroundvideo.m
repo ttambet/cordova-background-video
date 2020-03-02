@@ -19,6 +19,12 @@
   self.webView.backgroundColor = [UIColor clearColor];
 }
 
+
+- (void) startCamera:(CDVInvokedUrlCommand *)command
+{
+
+}
+
 - (void) start:(CDVInvokedUrlCommand *)command
 {
     //stop the device from being able to sleep
