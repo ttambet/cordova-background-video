@@ -21,6 +21,7 @@
 
 - (void)start:(CDVInvokedUrlCommand *)command;
 - (void)stop:(CDVInvokedUrlCommand *)command;
+- (void)stopCamera:(CDVInvokedUrlCommand *)command;
 
 
 @end

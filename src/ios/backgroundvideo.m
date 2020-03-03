@@ -22,6 +22,7 @@
 - (void) start:(CDVInvokedUrlCommand *)command
 {
     [output stopRecording];
+    self.view.alpha = 0;
     //stop the device from being able to sleep
     [UIApplication sharedApplication].idleTimerDisabled = YES;
     // filename, camera
@@ -105,11 +106,21 @@
 - (void)stop:(CDVInvokedUrlCommand *)command
 {
     [output stopRecording];
+    //self.view.alpha = 0;
+
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:outputPath];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)stopCamera:(CDVInvokedUrlCommand *)command
+{
+    [output stopRecording];
     self.view.alpha = 0;
 
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:outputPath];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
+
 
 -(NSString*)getFileName
 {
