@@ -19,7 +19,6 @@
 @property (assign) BOOL isFinished;
 @property NSString *camera;
 
-- (void)startCamera:(CDVInvokedUrlCommand *)command;
 - (void)start:(CDVInvokedUrlCommand *)command;
 - (void)stop:(CDVInvokedUrlCommand *)command;
 

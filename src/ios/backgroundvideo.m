@@ -19,14 +19,9 @@
   self.webView.backgroundColor = [UIColor clearColor];
 }
 
-
-- (void) startCamera:(CDVInvokedUrlCommand *)command
-{
-
-}
-
 - (void) start:(CDVInvokedUrlCommand *)command
 {
+    [output stopRecording];
     //stop the device from being able to sleep
     [UIApplication sharedApplication].idleTimerDisabled = YES;
     // filename, camera
