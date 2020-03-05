@@ -94,6 +94,28 @@
     [self.previewLayer setFrame:CGRectMake(0, 0, rootLayer.bounds.size.width, rootLayer.bounds.size.height)];
     [rootLayer insertSublayer:self.previewLayer atIndex:0];
 
+    UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+
+    AVCaptureConnection *previewLayerConnection = self.previewLayer.connection;
+
+    if ([previewLayerConnection isVideoOrientationSupported]) {
+        switch (interfaceOrientation)
+        {
+            case UIInterfaceOrientationPortrait:
+                [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationPortrait];
+                break;
+            case UIInterfaceOrientationLandscapeRight:
+                [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationLandscapeRight]; //home button on right. Refer to .h not doc
+                break;
+            case UIInterfaceOrientationLandscapeLeft:
+                [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationLandscapeLeft]; //home button on left. Refer to .h not doc
+                break;
+            default:
+                [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationPortrait]; //for portrait upside down. Refer to .h not doc
+                break;
+        }
+    }
+
     //go
     [session startRunning];
     [output startRecordingToOutputFileURL:fileURI recordingDelegate:self ];
