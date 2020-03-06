@@ -97,21 +97,27 @@
     UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
 
     AVCaptureConnection *previewLayerConnection = self.previewLayer.connection;
+    AVCaptureConnection *outputConnection = [output connectionWithMediaType:AVMediaTypeVideo];
+
 
     if ([previewLayerConnection isVideoOrientationSupported]) {
         switch (interfaceOrientation)
         {
             case UIInterfaceOrientationPortrait:
                 [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationPortrait];
+                [outputConnection setVideoOrientation:AVCaptureVideoOrientationPortrait]; //portrait
                 break;
             case UIInterfaceOrientationLandscapeRight:
-                [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationLandscapeRight]; //home button on right. Refer to .h not doc
+                [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationLandscapeRight];
+                [outputConnection setVideoOrientation:AVCaptureVideoOrientationLandscapeRight]; //home button on right.
                 break;
             case UIInterfaceOrientationLandscapeLeft:
-                [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationLandscapeLeft]; //home button on left. Refer to .h not doc
+                [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationLandscapeLeft];
+                [outputConnection setVideoOrientation:AVCaptureVideoOrientationLandscapeLeft]; //home button on left.
                 break;
             default:
-                [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationPortrait]; //for portrait upside down. Refer to .h not doc
+                [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationPortraitUpsideDown];
+                [outputConnection setVideoOrientation:AVCaptureVideoOrientationPortraitUpsideDown]; //portrait upside down
                 break;
         }
     }
