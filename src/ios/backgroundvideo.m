@@ -28,17 +28,16 @@
     // filename, camera
     self.token = [command.arguments objectAtIndex:0];
     self.camera = [command.arguments objectAtIndex:1];
+    self.x = [command.arguments objectAtIndex:2];
+    self.y = [command.arguments objectAtIndex:3];
+    self.width = [command.arguments objectAtIndex:4];
+    self.height = [command.arguments objectAtIndex:5];
 
     //get rid of the old view (causes issues if the app is resumed)
     self.parentView = nil;
 
     //make the view
-    CGRect viewRect = CGRectMake(
-                                 self.webView.superview.frame.size.width - 300,
-                                 self.webView.superview.frame.size.height - 250,
-                                 270,
-                                 200
-                                );
+    CGRect viewRect = CGRectMake( self.x, self.y, self.width, self.height );
 
     self.parentView = [[UIView alloc] initWithFrame:viewRect];
     [self.webView.superview addSubview:self.parentView];
