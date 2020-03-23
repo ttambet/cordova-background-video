@@ -1,25 +1,27 @@
 var cordova = require('cordova');
 
 var backgroundvideo = {
-    start : function(filename, camera, x, y, width, height, successFunction, errorFunction) {
-        camera = camera || 'back';
-        cordova.exec(successFunction, errorFunction, 'backgroundvideo', 'start', [filename, camera, x, y, width, height]);
+    initPreview: function(camera, x, y, width, height, successFunction, errorFunction) {
+        cordova.exec(successFunction, errorFunction, 'backgroundvideo', 'initPreview', [camera, x, y, width, height]);
         window.document.body.style.opacity = .99;
         setTimeout(function () {
           window.document.body.style.opacity = 1;
         }, 23)
     },
-    updatePreview : function(x, y, width, height, successFunction, errorFunction) {
+    enablePreview : function(successFunction, errorFunction) {
+        cordova.exec(successFunction, errorFunction, 'backgroundvideo','enablePreview', []);
+    },
+    disablePreview : function(successFunction, errorFunction) {
+        cordova.exec(successFunction, errorFunction, 'backgroundvideo','disablePreview', []);
+    },
+    updatePreview: function(x, y, width, height, successFunction, errorFunction) {
       cordova.exec(successFunction, errorFunction, 'backgroundvideo', 'updatePreview', [x, y, width, height]);
     },
-    stop : function(successFunction, errorFunction) {
-        cordova.exec(successFunction, errorFunction, 'backgroundvideo','stop', []);
+    startRecording: function(filename, successFunction, errorFunction) {
+      cordova.exec(successFunction, errorFunction, 'backgroundvideo', 'startRecording', [filename]);
     },
-    stopPreview : function(successFunction, errorFunction) {
-        cordova.exec(successFunction, errorFunction, 'backgroundvideo','stopPreview', []);
-    },
-    startPreview : function(successFunction, errorFunction) {
-        cordova.exec(successFunction, errorFunction, 'backgroundvideo','startPreview', []);
+    stopRecording: function(successFunction, errorFunction) {
+      cordova.exec(successFunction, errorFunction, 'backgroundvideo', 'stopRecording', []);
     }
 };
 

@@ -4,7 +4,7 @@
 
 @implementation backgroundvideo
 
-@synthesize parentView, view, session, output, outputPath, isFinished, previewLayer;
+@synthesize parentView, view, session, output, outputPath, previewLayer;
 
 #ifndef __IPHONE_3_0
 @synthesize webView;
@@ -19,22 +19,16 @@
   self.webView.backgroundColor = [UIColor clearColor];
 }
 
-- (void) start:(CDVInvokedUrlCommand *)command
-{
-    [output stopRecording];
-    self.view.alpha = 0;
-    //stop the device from being able to sleep
-    [UIApplication sharedApplication].idleTimerDisabled = YES;
-    // filename, camera
-    self.token = [command.arguments objectAtIndex:0];
-    self.camera = [command.arguments objectAtIndex:1];
-    id x = [command.arguments objectAtIndex:2];
-    id y = [command.arguments objectAtIndex:3];
-    id width = [command.arguments objectAtIndex:4];
-    id height = [command.arguments objectAtIndex:5];
 
-    //get rid of the old view (causes issues if the app is resumed)
-    self.parentView = nil;
+- (void) initPreview:(CDVInvokedUrlCommand *)command
+{
+    NSString* camera = [command.arguments objectAtIndex:0];
+    id x = [command.arguments objectAtIndex:1];
+    id y = [command.arguments objectAtIndex:2];
+    id width = [command.arguments objectAtIndex:3];
+    id height = [command.arguments objectAtIndex:4];
+
+    self.view.alpha = 0;
 
     //make the view
     CGRect viewRect = CGRectMake( [x floatValue], [y floatValue], [width floatValue], [height floatValue] );
@@ -46,42 +40,24 @@
     [self.parentView addSubview: view];
     self.parentView.userInteractionEnabled = NO;
 
-    //camera stuff
 
     //Capture session
     session = [[AVCaptureSession alloc] init];
     [session setSessionPreset:AVCaptureSessionPresetHigh];
 
-    //Get the front camera and set the capture device
-    AVCaptureDevice *inputDevice = [self getCamera: self.camera];
 
+    //Capture camera input
+    AVCaptureDevice *inputDevice = [self getCamera:camera];
+    AVCaptureDeviceInput *deviceInput = [AVCaptureDeviceInput deviceInputWithDevice:inputDevice error:nil];
 
-    //write the file
-    outputPath = [self getFileName];
-    NSURL *fileURI = [[NSURL alloc] initFileURLWithPath:outputPath];
+    if ([session canAddInput:deviceInput]) [session addInput:deviceInput];
 
-    //capture device output
-    CMTime maxDuration = CMTimeMakeWithSeconds(1800, 1);
-
-    output = [[AVCaptureMovieFileOutput alloc]init];
-    output.maxRecordedDuration = maxDuration;
-    output.movieFragmentInterval = kCMTimeInvalid;
-
-
-    if ( [session canAddOutput:output])
-        [session addOutput:output];
 
     //Capture audio input
     AVCaptureDevice *audioCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
     AVCaptureDeviceInput *audioInput = [AVCaptureDeviceInput deviceInputWithDevice:audioCaptureDevice error:nil];
 
-    if ([session canAddInput:audioInput])
-        [session addInput:audioInput];
-
-    //Capture device input
-    AVCaptureDeviceInput *deviceInput = [AVCaptureDeviceInput deviceInputWithDevice:inputDevice error:nil];
-    if ( [session canAddInput:deviceInput] )
-        [session addInput:deviceInput];
+    if ([session canAddInput:audioInput]) [session addInput:audioInput];
 
 
     //preview view
@@ -94,42 +70,27 @@
     [self.previewLayer setFrame:CGRectMake(0, 0, rootLayer.bounds.size.width, rootLayer.bounds.size.height)];
     [rootLayer insertSublayer:self.previewLayer atIndex:0];
 
-    UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-
-    AVCaptureConnection *previewLayerConnection = self.previewLayer.connection;
-    AVCaptureConnection *outputConnection = [output connectionWithMediaType:AVMediaTypeVideo];
+    [self setCaptureConnectionOrientation:self.previewLayer.connection];
 
 
-    if ([previewLayerConnection isVideoOrientationSupported]) {
-        switch (interfaceOrientation)
-        {
-            case UIInterfaceOrientationPortrait:
-                [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationPortrait];
-                [outputConnection setVideoOrientation:AVCaptureVideoOrientationPortrait]; //portrait
-                break;
-            case UIInterfaceOrientationLandscapeRight:
-                [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationLandscapeRight];
-                [outputConnection setVideoOrientation:AVCaptureVideoOrientationLandscapeRight]; //home button on right.
-                break;
-            case UIInterfaceOrientationLandscapeLeft:
-                [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationLandscapeLeft];
-                [outputConnection setVideoOrientation:AVCaptureVideoOrientationLandscapeLeft]; //home button on left.
-                break;
-            default:
-                [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationPortraitUpsideDown];
-                [outputConnection setVideoOrientation:AVCaptureVideoOrientationPortraitUpsideDown]; //portrait upside down
-                break;
-        }
-    }
-
-    //go
     [session startRunning];
-    [output startRecordingToOutputFileURL:fileURI recordingDelegate:self ];
 
-    //return true to ensure callback fires
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
+
+
+- (void) enablePreview:(CDVInvokedUrlCommand *)command
+{
+  [self.webView addSubview:self.parentView];
+}
+
+
+- (void) disablePreview:(CDVInvokedUrlCommand *)command
+{
+    [self.parentView removeFromSuperview];
+}
+
 
 - (void) updatePreview:(CDVInvokedUrlCommand *)command
 {
@@ -143,62 +104,97 @@
     [self.parentView setFrame:viewRect];
     [self.view setFrame:self.parentView.bounds];
 
-
     CALayer *rootLayer = [self.view layer];
     [self.previewLayer setFrame:CGRectMake(0, 0, rootLayer.bounds.size.width, rootLayer.bounds.size.height)];
+
+    [self setCaptureConnectionOrientation:self.previewLayer.connection];
+    if ([output isRecording]) {
+        AVCaptureConnection *outputConnection = [output connectionWithMediaType:AVMediaTypeVideo];
+        [self setCaptureConnectionOrientation:outputConnection];
+    }
 }
 
-- (void)stop:(CDVInvokedUrlCommand *)command
+
+- (void) startRecording:(CDVInvokedUrlCommand *)command
+{
+    NSString* token = [command.arguments objectAtIndex:0];
+
+    //capture device output
+    CMTime maxDuration = CMTimeMakeWithSeconds(1800, 1);
+
+    output = [[AVCaptureMovieFileOutput alloc] init];
+    output.maxRecordedDuration = maxDuration;
+    output.movieFragmentInterval = kCMTimeInvalid;
+
+    if ([session canAddOutput:output]) [session addOutput:output];
+
+    AVCaptureConnection *outputConnection = [output connectionWithMediaType:AVMediaTypeVideo];
+
+    [self setCaptureConnectionOrientation:outputConnection];
+
+    outputPath = [self getFileName:token];
+    NSURL *fileURI = [[NSURL alloc] initFileURLWithPath:outputPath];
+
+    [output startRecordingToOutputFileURL:fileURI recordingDelegate:self];
+}
+
+
+- (void) stopRecording:(CDVInvokedUrlCommand *)command
 {
     [output stopRecording];
-    //self.view.alpha = 0;
 
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:outputPath];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (void)stopPreview:(CDVInvokedUrlCommand *)command
+
+- (void) setCaptureConnectionOrientation:(AVCaptureConnection *)conn
 {
-  [self.parentView removeFromSuperview]
+    UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+
+    if ([conn isVideoOrientationSupported]) {
+        switch (interfaceOrientation) {
+            case UIInterfaceOrientationPortrait: //portrait
+                [conn setVideoOrientation:AVCaptureVideoOrientationPortrait];
+                break;
+            case UIInterfaceOrientationLandscapeRight: //home button on right
+                [conn setVideoOrientation:AVCaptureVideoOrientationLandscapeRight];
+                break;
+            case UIInterfaceOrientationLandscapeLeft: //home button on left
+                [conn setVideoOrientation:AVCaptureVideoOrientationLandscapeLeft];
+                break;
+            default: //portrait upside down
+                [conn setVideoOrientation:AVCaptureVideoOrientationPortraitUpsideDown];
+        }
+    }
 }
 
 
-- (void)startPreview:(CDVInvokedUrlCommand *)command
-{
-  [self.webView addSubview:self.parentView];
-}
-
-
--(NSString*)getFileName
+- (NSString *) getFileName:(NSString *)token
 {
     int fileNameIncrementer = 1;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSString *libPath = [self getCachePath];
 
-    NSString *tempPath = [[NSString alloc] initWithFormat:@"%@%@%@", libPath, self.token, FileExtension];
+    NSString *tempPath = [[NSString alloc] initWithFormat:@"%@%@%@", libPath, token, FileExtension];
 
     while ([fileManager fileExistsAtPath:tempPath]) {
-        tempPath = [NSString stringWithFormat:@"%@%@_%i%@", libPath, self.token, fileNameIncrementer, FileExtension];
+        tempPath = [NSString stringWithFormat:@"%@%@_%i%@", libPath, token, fileNameIncrementer, FileExtension];
         fileNameIncrementer++;
     }
 
     return tempPath;
 }
 
--(NSString*)getLibraryPath
-{
-    NSArray *lib = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
-    NSString *library = [lib objectAtIndex:0];
-    return [NSString stringWithFormat:@"%@/NoCloud/", library];
-}
 
--(NSString*)getCachePath
+- (NSString*) getCachePath
 {
     NSString* cachePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0];
     return [NSString stringWithFormat:@"%@/", cachePath];
 }
 
--(AVCaptureDevice *)getCamera: (NSString *)camera
+
+- (AVCaptureDevice *) getCamera:(NSString *)camera
 {
     NSArray *videoDevices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
     AVCaptureDevice *captureDevice = nil;
@@ -229,8 +225,10 @@
     return captureDevice;
 }
 
-- (void)captureOutput:(AVCaptureFileOutput *)captureOutput didFinishRecordingToOutputFileAtURL:(NSURL *)outputFileURL fromConnections:(NSArray *)connections error:(NSError *)error
+
+- (void) captureOutput:(AVCaptureFileOutput *)captureOutput didFinishRecordingToOutputFileAtURL:(NSURL *)outputFileURL fromConnections:(NSArray *)connections error:(NSError *)error
 {
 }
+
 
 @end
