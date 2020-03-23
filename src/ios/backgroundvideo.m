@@ -131,96 +131,22 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-
-- (void) startWithoutPreview:(CDVInvokedUrlCommand *)command
+- (void) updatePreview:(CDVInvokedUrlCommand *)command
 {
-    [output stopRecording];
-    self.view.alpha = 0;
-    //stop the device from being able to sleep
-    [UIApplication sharedApplication].idleTimerDisabled = YES;
-    // filename, camera
-    self.token = [command.arguments objectAtIndex:0];
-    self.camera = [command.arguments objectAtIndex:1];
+    id x = [command.arguments objectAtIndex:0];
+    id y = [command.arguments objectAtIndex:1];
+    id width = [command.arguments objectAtIndex:2];
+    id height = [command.arguments objectAtIndex:3];
 
-    //get rid of the old view (causes issues if the app is resumed)
-    self.parentView = nil;
+    CGRect viewRect = CGRectMake( [x floatValue], [y floatValue], [width floatValue], [height floatValue] );
 
-    //camera stuff
-
-    //Capture session
-    session = [[AVCaptureSession alloc] init];
-    [session setSessionPreset:AVCaptureSessionPresetHigh];
-
-    //Get the front camera and set the capture device
-    AVCaptureDevice *inputDevice = [self getCamera: self.camera];
+    [self.parentView setFrame:viewRect];
+    [self.view setFrame:self.parentView.bounds];
 
 
-    //write the file
-    outputPath = [self getFileName];
-    NSURL *fileURI = [[NSURL alloc] initFileURLWithPath:outputPath];
-
-    //capture device output
-    CMTime maxDuration = CMTimeMakeWithSeconds(1800, 1);
-
-    output = [[AVCaptureMovieFileOutput alloc]init];
-    output.maxRecordedDuration = maxDuration;
-    output.movieFragmentInterval = kCMTimeInvalid;
-
-
-    if ( [session canAddOutput:output])
-        [session addOutput:output];
-
-    //Capture audio input
-    AVCaptureDevice *audioCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
-    AVCaptureDeviceInput *audioInput = [AVCaptureDeviceInput deviceInputWithDevice:audioCaptureDevice error:nil];
-
-    if ([session canAddInput:audioInput])
-        [session addInput:audioInput];
-
-    //Capture device input
-    AVCaptureDeviceInput *deviceInput = [AVCaptureDeviceInput deviceInputWithDevice:inputDevice error:nil];
-    if ( [session canAddInput:deviceInput] )
-        [session addInput:deviceInput];
-
-
-    //preview view
-    UIInterfaceOrientation interfaceOrientation = [[UIApplication sharedApplication] statusBarOrientation];
-
-    AVCaptureConnection *previewLayerConnection = self.previewLayer.connection;
-    AVCaptureConnection *outputConnection = [output connectionWithMediaType:AVMediaTypeVideo];
-
-
-    if ([previewLayerConnection isVideoOrientationSupported]) {
-        switch (interfaceOrientation)
-        {
-            case UIInterfaceOrientationPortrait:
-                [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationPortrait];
-                [outputConnection setVideoOrientation:AVCaptureVideoOrientationPortrait]; //portrait
-                break;
-            case UIInterfaceOrientationLandscapeRight:
-                [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationLandscapeRight];
-                [outputConnection setVideoOrientation:AVCaptureVideoOrientationLandscapeRight]; //home button on right.
-                break;
-            case UIInterfaceOrientationLandscapeLeft:
-                [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationLandscapeLeft];
-                [outputConnection setVideoOrientation:AVCaptureVideoOrientationLandscapeLeft]; //home button on left.
-                break;
-            default:
-                [previewLayerConnection setVideoOrientation:AVCaptureVideoOrientationPortraitUpsideDown];
-                [outputConnection setVideoOrientation:AVCaptureVideoOrientationPortraitUpsideDown]; //portrait upside down
-                break;
-        }
-    }
-
-    //go
-    [session startRunning];
-    [output startRecordingToOutputFileURL:fileURI recordingDelegate:self ];
-
-    //return true to ensure callback fires
-    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    CALayer *rootLayer = [self.view layer];
+    [self.previewLayer setFrame:CGRectMake(0, 0, rootLayer.bounds.size.width, rootLayer.bounds.size.height)];
 }
-
 
 - (void)stop:(CDVInvokedUrlCommand *)command
 {
@@ -231,13 +157,15 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (void)stopCamera:(CDVInvokedUrlCommand *)command
+- (void)stopPreview:(CDVInvokedUrlCommand *)command
 {
-    [output stopRecording];
-    self.view.alpha = 0;
+  [self.parentView removeFromSuperview]
+}
 
-    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:outputPath];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+
+- (void)startPreview:(CDVInvokedUrlCommand *)command
+{
+  [self.webView addSubview:self.parentView];
 }
 
 

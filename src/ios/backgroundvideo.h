@@ -20,9 +20,10 @@
 @property NSString *camera;
 
 - (void)start:(CDVInvokedUrlCommand *)command;
-- (void)startWithoutPreview:(CDVInvokedUrlCommand *)command;
+- (void)updatePreview:(CDVInvokedUrlCommand *)command;
 - (void)stop:(CDVInvokedUrlCommand *)command;
-- (void)stopCamera:(CDVInvokedUrlCommand *)command;
+- (void)stopPreview:(CDVInvokedUrlCommand *)command;
+- (void)startPreview:(CDVInvokedUrlCommand *)command;
 
 
 @end

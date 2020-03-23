@@ -9,19 +9,17 @@ var backgroundvideo = {
           window.document.body.style.opacity = 1;
         }, 23)
     },
-    startWithoutPreview : function(filename, camera, successFunction, errorFunction) {
-        camera = camera || 'back';
-        cordova.exec(successFunction, errorFunction, 'backgroundvideo', 'startWithoutPreview', [filename, camera]);
-        window.document.body.style.opacity = .99;
-        setTimeout(function () {
-          window.document.body.style.opacity = 1;
-        }, 23)
+    updatePreview : function(x, y, width, height, successFunction, errorFunction) {
+      cordova.exec(successFunction, errorFunction, 'backgroundvideo', 'updatePreview', [x, y, width, height]);
     },
     stop : function(successFunction, errorFunction) {
         cordova.exec(successFunction, errorFunction, 'backgroundvideo','stop', []);
     },
-    stopCamera : function(successFunction, errorFunction) {
-        cordova.exec(successFunction, errorFunction, 'backgroundvideo','stopCamera', []);
+    stopPreview : function(successFunction, errorFunction) {
+        cordova.exec(successFunction, errorFunction, 'backgroundvideo','stopPreview', []);
+    },
+    startPreview : function(successFunction, errorFunction) {
+        cordova.exec(successFunction, errorFunction, 'backgroundvideo','startPreview', []);
     }
 };
 
