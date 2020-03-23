@@ -82,13 +82,19 @@
 
 - (void) enablePreview:(CDVInvokedUrlCommand *)command
 {
-  [self.webView addSubview:self.parentView];
+    [self.webView addSubview:self.parentView];
+
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 
 - (void) disablePreview:(CDVInvokedUrlCommand *)command
 {
     [self.parentView removeFromSuperview];
+
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 
@@ -112,6 +118,9 @@
         AVCaptureConnection *outputConnection = [output connectionWithMediaType:AVMediaTypeVideo];
         [self setCaptureConnectionOrientation:outputConnection];
     }
+
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 
@@ -136,6 +145,9 @@
     NSURL *fileURI = [[NSURL alloc] initFileURLWithPath:outputPath];
 
     [output startRecordingToOutputFileURL:fileURI recordingDelegate:self];
+
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 
@@ -144,6 +156,17 @@
     [output stopRecording];
 
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:outputPath];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+
+- (void) stopAll:(CDVInvokedUrlCommand *)command
+{
+    if ([output isRecording]) [output stopRecording];
+    [session stopRunning];
+    [self.parentView removeFromSuperview];
+
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 

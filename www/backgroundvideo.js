@@ -22,6 +22,9 @@ var backgroundvideo = {
     },
     stopRecording: function(successFunction, errorFunction) {
       cordova.exec(successFunction, errorFunction, 'backgroundvideo', 'stopRecording', []);
+    },
+    stopAll: function(successFunction, errorFunction) {
+      cordova.exec(successFunction, errorFunction, 'backgroundvideo', 'stopAll', []);
     }
 };
 
