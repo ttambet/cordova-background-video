@@ -34,7 +34,6 @@
     CGRect viewRect = CGRectMake( [x floatValue], [y floatValue], [width floatValue], [height floatValue] );
 
     self.parentView = [[UIView alloc] initWithFrame:viewRect];
-    [self.webView addSubview:self.parentView];
 
     self.view = [[UIView alloc] initWithFrame: self.parentView.bounds];
     [self.parentView addSubview: view];
@@ -126,6 +125,8 @@
 
 - (void) startRecording:(CDVInvokedUrlCommand *)command
 {
+    [output stopRecording];
+
     NSString* token = [command.arguments objectAtIndex:0];
 
     //capture device output
