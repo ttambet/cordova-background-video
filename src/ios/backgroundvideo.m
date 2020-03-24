@@ -44,6 +44,15 @@
     session = [[AVCaptureSession alloc] init];
     [session setSessionPreset:AVCaptureSessionPresetHigh];
 
+    //capture device output
+    CMTime maxDuration = CMTimeMakeWithSeconds(1800, 1);
+
+    output = [[AVCaptureMovieFileOutput alloc] init];
+    output.maxRecordedDuration = maxDuration;
+    output.movieFragmentInterval = kCMTimeInvalid;
+
+    if ([session canAddOutput:output]) [session addOutput:output];
+
 
     //Capture camera input
     AVCaptureDevice *inputDevice = [self getCamera:camera];
@@ -128,15 +137,6 @@
     [output stopRecording];
 
     NSString* token = [command.arguments objectAtIndex:0];
-
-    //capture device output
-    CMTime maxDuration = CMTimeMakeWithSeconds(1800, 1);
-
-    output = [[AVCaptureMovieFileOutput alloc] init];
-    output.maxRecordedDuration = maxDuration;
-    output.movieFragmentInterval = kCMTimeInvalid;
-
-    if ([session canAddOutput:output]) [session addOutput:output];
 
     AVCaptureConnection *outputConnection = [output connectionWithMediaType:AVMediaTypeVideo];
 
