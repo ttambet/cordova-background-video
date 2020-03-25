@@ -90,7 +90,11 @@
 
 - (void) enablePreview:(CDVInvokedUrlCommand *)command
 {
-    [self.webView addSubview:self.parentView];
+    [self.webView.superview addSubview:self.parentView];
+
+    self.webView.opaque = NO;
+    self.webView.backgroundColor = [UIColor clearColor];
+    [self.webView.superview bringSubviewToFront:self.webView];
 
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
