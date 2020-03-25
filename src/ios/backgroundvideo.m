@@ -42,7 +42,7 @@
 
     //Capture session
     session = [[AVCaptureSession alloc] init];
-    [session setSessionPreset:AVCaptureSessionPresetHigh];
+    [session setSessionPreset:AVCaptureSessionPreset640x480];
 
     //capture device output
     CMTime maxDuration = CMTimeMakeWithSeconds(1800, 1);
