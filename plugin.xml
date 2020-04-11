@@ -27,12 +27,7 @@
 
     <preference name="CAMERA_USAGE_DESCRIPTION" default="Use for video messages" />
     <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
-      <string>Backgroundvideo cordova plugin</string>
-    </config-file>
-
-    <preference name="MICROPHONE_USAGE_DESCRIPTION" default=" " />
-    <config-file target="*-Info.plist" parent="Use for video and audio messages">
-      <string>Backgroundvideo cordova plugin</string>
+      <string>Required for recording video exercises</string>
     </config-file>
 
     <header-file src="src/ios/backgroundvideo.h" />
