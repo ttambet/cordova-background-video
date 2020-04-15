@@ -73,7 +73,7 @@ public class BackgroundVideo extends CordovaPlugin {
                     return true;
                 }
 
-                Start(this.requestArgs);
+                StartPreview(this.requestArgs);
                 return true;
             }
 
@@ -91,11 +91,12 @@ public class BackgroundVideo extends CordovaPlugin {
             }
 
             if (ACTION_START_RECORDING.equalsIgnoreCase(action)) {
+                StartRecording();
                 return true;
             }
 
             if (ACTION_STOP_RECORDING.equalsIgnoreCase(action)) {
-                Stop();
+                StopRecording();
                 return true;
             }
 
@@ -122,13 +123,11 @@ public class BackgroundVideo extends CordovaPlugin {
         }
 
         if (requestCode == START_REQUEST_CODE) {
-            Start(this.requestArgs);
+            StartPreview(this.requestArgs);
         }
     }
 
-    private void Start(JSONArray args) throws JSONException {
-
-        final String filename = "recording";
+    private void StartPreview(JSONArray args) throws JSONException {
         final String cameraFace = args.getString(0);
         final int x = args.getInt(1);
         final int y = args.getInt(2);
@@ -156,6 +155,8 @@ public class BackgroundVideo extends CordovaPlugin {
 
                         webView.getView().setBackgroundColor(0x00ffffff);
                         ((ViewGroup)webView.getView()).bringToFront();
+
+                        videoOverlay.StartPreview();
                     } catch (Exception e) {
                         Log.e(TAG, "Error during preview create", e);
                         callbackContext.error(TAG + ": " + e.getMessage());
@@ -166,27 +167,24 @@ public class BackgroundVideo extends CordovaPlugin {
 
         videoOverlay.setCameraFacing(cameraFace);
 
-        cordova.getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    videoOverlay.Start(getFilePath(filename));
-                    callbackContext.success();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    callbackContext.error(e.getMessage());
-                }
-            }
-        });
+        callbackContext.success();
     }
 
-    private void Stop() throws JSONException {
+    private void StartRecording() {
+        String fname = getFilePath("recording");
+
+        videoOverlay.StartRecording(fname);
+
+        callbackContext.success();
+    }
+
+    private void StopRecording() throws JSONException {
         cordova.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (videoOverlay != null) {
                     try {
-                        String filepath = videoOverlay.Stop();
+                        String filepath = videoOverlay.StopRecording();
                         callbackContext.success(filepath);
                     } catch (IOException e) {
                         e.printStackTrace();
