@@ -6,6 +6,7 @@
   "cordova": {
     "id": "cordova-background-video",
     "platforms": [
+      "android",
       "ios"
     ]
   },
@@ -17,6 +18,7 @@
     "camera",
     "cordova",
     "ecosystem:cordova",
+    "cordova-android",
     "cordova-ios"
   ],
   "repository": {
