@@ -24,8 +24,15 @@ import java.util.List;
 
 public class BackgroundVideo extends CordovaPlugin {
     private static final String TAG = "BACKGROUND_VIDEO";
-    private static final String ACTION_START_RECORDING = "start";
-    private static final String ACTION_STOP_RECORDING = "stop";
+
+    private static final String ACTION_INIT_PREVIEW = "initPreview";
+    private static final String ACTION_ENABLE_PREVIEW = "enablePreview";
+    private static final String ACTION_DISABLE_PREVIEW = "disablePreview";
+    private static final String ACTION_UPDATE_PREVIEW = "updatePreview";
+    private static final String ACTION_START_RECORDING = "startRecording";
+    private static final String ACTION_STOP_RECORDING = "stopRecording";
+    private static final String ACTION_STOP_ALL = "stopAll";
+
     private static final String FILE_EXTENSION = ".mp4";
     private static final int START_REQUEST_CODE = 0;
 
@@ -52,7 +59,7 @@ public class BackgroundVideo extends CordovaPlugin {
         try {
             Log.d(TAG, "ACTION: " + action);
 
-            if (ACTION_START_RECORDING.equalsIgnoreCase(action)) {
+            if (ACTION_INIT_PREVIEW.equalsIgnoreCase(action)) {
 
                 List<String> permissions = new ArrayList<String>();
                 if (!cordova.hasPermission(android.Manifest.permission.CAMERA)) {
@@ -70,8 +77,28 @@ public class BackgroundVideo extends CordovaPlugin {
                 return true;
             }
 
+            if (ACTION_ENABLE_PREVIEW.equalsIgnoreCase(action)) {
+                return true;
+            }
+
+            if (ACTION_DISABLE_PREVIEW.equalsIgnoreCase(action)) {
+                return true;
+            }
+
+            if (ACTION_UPDATE_PREVIEW.equalsIgnoreCase(action)) {
+                return true;
+            }
+
+            if (ACTION_START_RECORDING.equalsIgnoreCase(action)) {
+                return true;
+            }
+
             if (ACTION_STOP_RECORDING.equalsIgnoreCase(action)) {
                 Stop();
+                return true;
+            }
+
+            if (ACTION_STOP_ALL.equalsIgnoreCase(action)) {
                 return true;
             }
 
