@@ -170,7 +170,7 @@ public class BackgroundVideo extends CordovaPlugin {
         callbackContext.success();
     }
 
-    private void StartRecording() {
+    private void StartRecording() throws Exception {
         String fname = getFilePath("recording");
 
         videoOverlay.StartRecording(fname);
@@ -218,21 +218,13 @@ public class BackgroundVideo extends CordovaPlugin {
     //Plugin Method Overrides
     @Override
     public void onPause(boolean multitasking) {
-        if (videoOverlay != null) {
-            try {
-                this.Stop();
-            } catch (JSONException e) {
-                Log.e(TAG, e.getMessage(), e);
-                callbackContext.error(e.getMessage());
-            }
-        }
         super.onPause(multitasking);
     }
 
     @Override
     public void onDestroy() {
         try {
-            this.Stop();
+            this.StopRecording();
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage(), e);
         }
