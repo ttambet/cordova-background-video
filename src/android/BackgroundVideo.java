@@ -126,9 +126,9 @@ public class BackgroundVideo extends CordovaPlugin {
     }
 
     private void Start(JSONArray args) throws JSONException {
-        // params fileStorage, filename, camera, quality
-        final String filename = args.getString(0);
-        final String cameraFace = args.getString(1);
+
+        final String filename = "recording";
+        final String cameraFace = args.getString(0);
 
         if (videoOverlay == null) {
             videoOverlay = new VideoOverlay(cordova.getActivity()); //, getFilePath());
