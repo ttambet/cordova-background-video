@@ -129,9 +129,13 @@ public class BackgroundVideo extends CordovaPlugin {
 
         final String filename = "recording";
         final String cameraFace = args.getString(0);
+        final int x = args.getInt(1);
+        final int y = args.getInt(2);
+        final int width = args.getInt(3);
+        final int height = args.getInt(4);
 
         if (videoOverlay == null) {
-            videoOverlay = new VideoOverlay(cordova.getActivity()); //, getFilePath());
+            videoOverlay = new VideoOverlay(cordova.getActivity(), x, y, width, height);
 
             cordova.getActivity().runOnUiThread(new Runnable() {
                 @Override

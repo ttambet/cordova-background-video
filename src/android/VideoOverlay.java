@@ -31,8 +31,18 @@ public class VideoOverlay extends ViewGroup implements TextureView.SurfaceTextur
     private int mOrientation;
     private int mOrientationHint;
 
-    public VideoOverlay(Context context) {
+    private int x;
+    private int y;
+    private int width;
+    private int height;
+
+    public VideoOverlay(Context context, int x, int y, int width, int height) {
         super(context);
+
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
 
         this.setClickable(false);
         this.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -164,10 +174,9 @@ public class VideoOverlay extends ViewGroup implements TextureView.SurfaceTextur
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int numChildren = getChildCount();
         if (changed && numChildren > 0) {
-            int itemWidth = (r - l) / numChildren;
             for (int i = 0; i < numChildren; i++) {
                 View v = getChildAt(i);
-                v.layout(itemWidth * i, 0, (i + 1) * itemWidth, b - t);
+                v.layout(this.x, this.y, this.x+this.width, this.y+this.height);
             }
         }
     }
