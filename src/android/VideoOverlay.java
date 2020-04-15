@@ -24,7 +24,6 @@ public class VideoOverlay extends ViewGroup implements TextureView.SurfaceTextur
     private final TextureView mPreview;
     private boolean mPreviewAttached = false;
     private MediaRecorder mRecorder = null;
-    private boolean mStartWhenInitialized = false;
 
     private String mFilePath;
     private int mCameraFacing = Camera.CameraInfo.CAMERA_FACING_BACK;
@@ -65,20 +64,7 @@ public class VideoOverlay extends ViewGroup implements TextureView.SurfaceTextur
             return;
         }
 
-        if (!TextUtils.isEmpty(filePath)) {
-            this.mFilePath = filePath;
-        }
-
         attachView();
-
-        if (this.mRecordingState == RecordingState.INITIALIZING) {
-            this.mStartWhenInitialized = true;
-            return;
-        }
-
-        if (TextUtils.isEmpty(mFilePath)) {
-            throw new IllegalArgumentException("Filename for recording must be set");
-        }
 
         initializeCamera();
 
@@ -86,6 +72,10 @@ public class VideoOverlay extends ViewGroup implements TextureView.SurfaceTextur
             this.detachView();
             throw new NullPointerException("Cannot start recording, we don't have a camera!");
         }
+    }
+
+    public void StartRecording(String filePath) throws Exception {
+        this.mFilePath = filePath;
 
         // Set camera parameters
         Camera.Parameters cameraParameters = mCamera.getParameters();
@@ -96,7 +86,7 @@ public class VideoOverlay extends ViewGroup implements TextureView.SurfaceTextur
             mRecorder = new MediaRecorder();
             mRecorder.setCamera(mCamera);
 
-            CamcorderProfile profile = CamcorderProfile.get(mCameraId, CamcorderProfile.QUALITY_VGA);
+            CamcorderProfile profile = CamcorderProfile.get(mCameraId, CamcorderProfile.QUALITY_480P);
 
             mRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
             mRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
@@ -110,15 +100,7 @@ public class VideoOverlay extends ViewGroup implements TextureView.SurfaceTextur
             mRecorder.setVideoEncoder(profile.videoCodec);
             mRecorder.setAudioEncoder(profile.audioCodec);
             mRecorder.setOrientationHint(mOrientationHint);
-        } catch (Exception e) {
-            this.releaseCamera();
-            Log.e(TAG, "Could not init MediaRecorder Error", e);
-            throw e;
-        }
-    }
 
-    public void StartRecording(String filePath) {
-        try {
             Log.d(TAG, "Starting recording");
             mRecorder.setOutputFile(filePath);
             mRecorder.prepare();
@@ -233,10 +215,6 @@ public class VideoOverlay extends ViewGroup implements TextureView.SurfaceTextur
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         Log.d(TAG, "Creating Texture Created");
 
-        this.mRecordingState = RecordingState.STOPPED;
-
-        initializeCamera();
-
         if (mCamera != null) {
             try {
                 mCamera.setPreviewTexture(surface);
@@ -244,14 +222,6 @@ public class VideoOverlay extends ViewGroup implements TextureView.SurfaceTextur
                 Log.e(TAG, "Unable to attach preview to camera!", e);
             }
             mCamera.startPreview();
-        }
-
-        if (mStartWhenInitialized) {
-            try {
-                Start(this.mFilePath);
-            } catch (Exception ex) {
-                Log.e(TAG, "Error start camera", ex);
-            }
         }
     }
 
