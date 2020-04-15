@@ -86,6 +86,7 @@ public class BackgroundVideo extends CordovaPlugin {
             }
 
             if (ACTION_UPDATE_PREVIEW.equalsIgnoreCase(action)) {
+                UpdatePreview(this.requestArgs);
                 return true;
             }
 
@@ -194,6 +195,15 @@ public class BackgroundVideo extends CordovaPlugin {
                 }
             }
         });
+    }
+
+    private void UpdatePreview(JSONArray args) throws JSONException {
+        final int x = args.getInt(0);
+        final int y = args.getInt(1);
+        final int width = args.getInt(2);
+        final int height = args.getInt(3);
+
+        videoOverlay.setCoordinates(x, y, width, height);
     }
 
     private String getFilePath(String filename) {

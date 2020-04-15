@@ -170,6 +170,15 @@ public class VideoOverlay extends ViewGroup implements TextureView.SurfaceTextur
         return this.mFilePath;
     }
 
+    public void setCoordinates(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+
+        this.requestLayout();
+    }
+
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int numChildren = getChildCount();
