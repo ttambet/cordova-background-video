@@ -59,7 +59,7 @@ public class VideoOverlay extends ViewGroup implements TextureView.SurfaceTextur
         mCameraFacing = (cameraFace.equalsIgnoreCase("FRONT") ? Camera.CameraInfo.CAMERA_FACING_FRONT : Camera.CameraInfo.CAMERA_FACING_BACK);
     }
 
-    public void Start(String filePath) throws Exception {
+    public void StartPreview() throws Exception {
         if (this.mRecordingState == RecordingState.STARTED) {
             Log.w(TAG, "Already Recording");
             return;
@@ -96,37 +96,9 @@ public class VideoOverlay extends ViewGroup implements TextureView.SurfaceTextur
             mRecorder = new MediaRecorder();
             mRecorder.setCamera(mCamera);
 
-            CamcorderProfile profile;
-            if (CamcorderProfile.hasProfile(mCameraId, CamcorderProfile.QUALITY_480P)) {
-                profile = CamcorderProfile.get(mCameraId, CamcorderProfile.QUALITY_480P);
-                profile.videoFrameWidth = 720;
-                profile.videoFrameHeight = 480;
-                Log.w(TAG, "QUALITY_480P");
-            } else {
-                if (CamcorderProfile.hasProfile(mCameraId, CamcorderProfile.QUALITY_720P)) {
-                    profile = CamcorderProfile.get(mCameraId, CamcorderProfile.QUALITY_720P);
-                    profile.videoFrameWidth = 1280;
-                    profile.videoFrameHeight = 720;
-                    Log.w(TAG, "QUALITY_720P");
-                } else {
-                    if (CamcorderProfile.hasProfile(mCameraId, CamcorderProfile.QUALITY_1080P)) {
-                      profile = CamcorderProfile.get(mCameraId, CamcorderProfile.QUALITY_1080P);
-                      profile.videoFrameWidth = 1920;
-                      profile.videoFrameHeight = 1080;
-                      Log.w(TAG, "QUALITY_1080P");
-                    } else {
-                      profile = CamcorderProfile.get(mCameraId, CamcorderProfile.QUALITY_LOW);
-                      Camera.Size lowestRes = CameraHelper.getBestResolution(cameraParameters);
-                      profile.videoFrameWidth = lowestRes.width;
-                      profile.videoFrameHeight = lowestRes.height;
-                      Log.w(TAG, "QUALITY_LOW");
-                    }
-                }
-            }
-
+            CamcorderProfile profile = CamcorderProfile.get(mCameraId, CamcorderProfile.QUALITY_VGA);
 
             mRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-            // With audio
             mRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
             mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             mRecorder.setVideoFrameRate(profile.videoFrameRate);
@@ -137,20 +109,29 @@ public class VideoOverlay extends ViewGroup implements TextureView.SurfaceTextur
             mRecorder.setAudioSamplingRate(profile.audioSampleRate);
             mRecorder.setVideoEncoder(profile.videoCodec);
             mRecorder.setAudioEncoder(profile.audioCodec);
-
-            mRecorder.setOutputFile(filePath);
             mRecorder.setOrientationHint(mOrientationHint);
-            mRecorder.prepare();
-            Log.d(TAG, "Starting recording");
-            mRecorder.start();
         } catch (Exception e) {
             this.releaseCamera();
-            Log.e(TAG, "Could not start recording! MediaRecorder Error", e);
+            Log.e(TAG, "Could not init MediaRecorder Error", e);
             throw e;
         }
     }
 
-    public String Stop() throws IOException {
+    public void StartRecording(String filePath) {
+        try {
+            Log.d(TAG, "Starting recording");
+            mRecorder.setOutputFile(filePath);
+            mRecorder.prepare();
+            mRecorder.start();
+        } catch (Exception e) {
+            this.releaseCamera();
+            Log.e(TAG, "Could not start recording", e);
+            throw e;
+        }
+
+    }
+
+    public String StopRecording() throws IOException {
         Log.d(TAG, "stopRecording called");
 
         if (mRecorder != null) {
@@ -168,6 +149,15 @@ public class VideoOverlay extends ViewGroup implements TextureView.SurfaceTextur
         this.detachView();
 
         return this.mFilePath;
+    }
+
+    public void setCoordinates(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+
+        this.requestLayout();
     }
 
     @Override
