@@ -56,6 +56,11 @@
 
     //Capture camera input
     AVCaptureDevice *inputDevice = [self getCamera:camera];
+    [inputDevice lockForConfiguration:nil];
+    [inputDevice setActiveVideoMinFrameDuration:CMTimeMake(1, 30)];
+    [inputDevice setActiveVideoMaxFrameDuration:CMTimeMake(1, 30)];
+    [inputDevice unlockForConfiguration];
+
     AVCaptureDeviceInput *deviceInput = [AVCaptureDeviceInput deviceInputWithDevice:inputDevice error:nil];
 
     if ([session canAddInput:deviceInput]) [session addInput:deviceInput];
